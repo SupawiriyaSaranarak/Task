@@ -45,7 +45,9 @@ public class BackOfficeService {
         ResponseEntity<Officer> response;
         try {
             response = restTemplate.exchange(backOfficetaskTaskTypeOfficerEndpoint, HttpMethod.GET, null, Officer.class, Map.of("taskType", taskType));
+            
         } catch (HttpStatusCodeException ex) {
+        	
         	response = null;
         	if (ex.getStatusCode() != null && Objects.equals(ex.getStatusCode(), HttpStatusCode.valueOf(404))) {
         		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found");
