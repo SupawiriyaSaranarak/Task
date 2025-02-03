@@ -1,0 +1,10 @@
+package com.example.task.enums;
+
+public enum TaskTypeEnum {
+CREDIT_BALANCE_INQUIRY,
+CARD_ACTIVATION,
+REPAYMENT,
+CARD_BLOCK,
+STATEMENT_INQUIRY,
+OTHER
+}
