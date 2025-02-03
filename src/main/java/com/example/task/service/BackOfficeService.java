@@ -1,5 +1,6 @@
 package com.example.task.service;
 
+import java.util.Map;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,8 @@ import com.example.task.dto.ResponseMessage;
 import com.example.task.entity.Task;
 import com.example.task.enums.TaskTypeEnum;
 
+import org.springframework.beans.factory.annotation.Value;
+
 
 
 
@@ -28,17 +31,24 @@ public class BackOfficeService {
 
 	@Autowired
     private RestTemplate restTemplate;
+//	@Value("${app.backOffice.base-url}")
+//	private String backOfficeBaseUrl;
+	@Value("${app.backOffice.base-url}${app.backOffice.task-tasktype-officer-endpoint}")
+	private String backOfficetaskTaskTypeOfficerEndpoint;
+	@Value("${app.backOffice.base-url}${app.backOffice.task-endpoint}")
+	private String backOfficetaskEndpoint;
+	
 
     public Officer getOfficerByTaskType (TaskTypeEnum taskType) {
-        String url = "http://localhost:8082/back-office/task/"+taskType+"/officer";
+        System.out.print(backOfficetaskTaskTypeOfficerEndpoint);
         
         ResponseEntity<Officer> response;
         try {
-            response = restTemplate.exchange(url, HttpMethod.GET, null, Officer.class);
+            response = restTemplate.exchange(backOfficetaskTaskTypeOfficerEndpoint, HttpMethod.GET, null, Officer.class, Map.of("taskType", taskType));
         } catch (HttpStatusCodeException ex) {
         	response = null;
         	if (ex.getStatusCode() != null && Objects.equals(ex.getStatusCode(), HttpStatusCode.valueOf(404))) {
-        		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
+        		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found");
         	}
         }
 
@@ -50,15 +60,14 @@ public class BackOfficeService {
     }
     
     @PostMapping("/task")
-	public ResponseMessage sendTask (@RequestBody Task task) {	
-    	String url = "http://localhost:8082/back-office/task";  
+	public ResponseMessage sendTask (@RequestBody Task task) {	  
 
         // Create request entity
         HttpEntity<Task> request = new HttpEntity<>(task);
         
         ResponseEntity<ResponseMessage> response;
         try {
-            response = restTemplate.exchange(url, HttpMethod.POST, request, ResponseMessage.class);
+            response = restTemplate.exchange(backOfficetaskEndpoint, HttpMethod.POST, request, ResponseMessage.class);
         } catch (HttpStatusCodeException ex) {
         	response = null;
         	if (ex.getStatusCode() != null && Objects.equals(ex.getStatusCode(), HttpStatusCode.valueOf(404))) {
